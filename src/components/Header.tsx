@@ -229,7 +229,7 @@ const Header = () => {
       <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b text-white
         ${showHeader ? 'translate-y-0' : '-translate-y-full'}
         ${hasBackground
-        ? 'bg-black/60 backdrop-blur-md shadow-md border-white/20'
+        ? 'bg-white backdrop-blur-md shadow-md border-white/20 text-[#4b4d4e]'
         : 'bg-transparent border-transparent'
       }`}
       >
