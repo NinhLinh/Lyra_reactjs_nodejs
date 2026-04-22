@@ -226,11 +226,11 @@ const Header = () => {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b text-white
+      <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b
         ${showHeader ? 'translate-y-0' : '-translate-y-full'}
         ${hasBackground
-        ? 'bg-white backdrop-blur-md shadow-md border-white/20 text-[#4b4d4e]'
-        : 'bg-transparent border-transparent'
+        ? 'bg-white backdrop-blur-md shadow-md border-white/20 text-black'
+        : 'bg-transparent border-transparent text-white'
       }`}
       >
         <nav className="container mx-auto flex items-center justify-between p-4 relative">

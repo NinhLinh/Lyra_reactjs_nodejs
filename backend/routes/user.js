@@ -145,4 +145,87 @@ router.put('/change-password', auth, async (req, res) => {
     }
 });
 
+
+/**
+ * =========================
+ * ADMIN: GET ALL USERS
+ * =========================
+ */
+const admin = require('../middleware/admin');
+router.get('/admin/all-users', admin, async (req, res) => {
+    try {
+        const users = await User.find().select('-password').sort({ createdAt: -1 }).lean();
+        res.json(users);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: 'Server error'
+        });
+    }
+});
+
+
+/**
+ * =========================
+ * ADMIN: UPDATE USER ROLE
+ * =========================
+ */
+router.put('/admin/:id/role', admin, async (req, res) => {
+    const { role } = req.body;
+
+    try {
+        if (!['customer', 'admin'].includes(role)) {
+            return res.status(400).json({
+                message: 'Invalid role'
+            });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { role },
+            { new: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
+        res.json(user);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: 'Server error'
+        });
+    }
+});
+
+
+/**
+ * =========================
+ * ADMIN: DELETE USER
+ * =========================
+ */
+router.delete('/admin/:id', admin, async (req, res) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
+        res.json({
+            message: 'User deleted'
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: 'Server error'
+        });
+    }
+});
+
 module.exports = router;

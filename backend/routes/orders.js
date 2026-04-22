@@ -216,4 +216,68 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+// ADMIN: Get all orders
+const admin = require('../middleware/admin');
+router.get('/admin/all-orders', admin, async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate('user', 'name email')
+      .populate('products.product', 'name price image')
+      .sort({ createdAt: -1 })
+      .lean();
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ADMIN: Get order statistics
+router.get('/admin/statistics', admin, async (req, res) => {
+  try {
+    const totalOrders = await Order.countDocuments();
+    const totalRevenue = await Order.aggregate([
+      { $group: { _id: null, total: { $sum: '$total' } } }
+    ]);
+    
+    const totalUsers = await Order.distinct('user');
+    const totalProducts = await Product.countDocuments();
+    
+    const recentOrders = await Order.find()
+      .populate('user', 'name email')
+      .populate('products.product', 'name price')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean();
+
+    res.json({
+      totalOrders,
+      totalRevenue: totalRevenue[0]?.total || 0,
+      totalUsers: totalUsers.length,
+      totalProducts,
+      recentOrders,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ADMIN: Update order status
+router.put('/admin/orders/:id/status', admin, async (req, res) => {
+  const { status, paymentStatus } = req.body;
+  try {
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { ...(status && { status }), ...(paymentStatus && { paymentStatus }) },
+      { new: true }
+    ).populate('user', 'name email').populate('products.product', 'name price image');
+    
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    res.json(order);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 module.exports = router;
