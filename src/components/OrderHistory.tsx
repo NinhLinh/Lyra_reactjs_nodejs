@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FiEye, FiTrash, FiPackage } from "react-icons/fi";
+import Pagination from './Pagination';
 
 interface Order {
   _id: string;
@@ -323,52 +324,38 @@ const OrderHistory: React.FC = () => {
                 Showing {sortedOrders.length === 0 ? 0 : (currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, sortedOrders.length)} of {sortedOrders.length} orders
               </div>
             </div>
-            <div className="flex items-center justify-center gap-2">
-              <button
-                type="button"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                className="rounded-2xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-all hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
-              >
-                Previous
-              </button>
-              <button
-                type="button"
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                className="rounded-2xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-all hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
       )}
 
-      {/* Confirmation Modal */}
+      {/* Confirm Delete Modal */}
       {showConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 p-4">
-          <div className="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-6 mx-auto">
-              <FiTrash className="text-2xl" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 text-center">Delete Order</h2>
-            <p className="text-sm text-gray-500 text-center mt-2 mb-8 leading-relaxed">
-              Are you sure you want to remove this order from your history? This action cannot be undone.
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="px-4 py-3 rounded-2xl border border-gray-200 font-bold text-gray-700 hover:bg-gray-50 transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleRemoveOrder}
-                className="px-4 py-3 bg-red-600 text-white rounded-2xl font-bold hover:bg-red-700 shadow-lg shadow-red-200 transition-all"
-              >
-                Delete
-              </button>
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center px-4">
+          <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
+              <p className="text-sm text-gray-500 text-center mt-2 mb-8 leading-relaxed">
+                Are you sure you want to remove this order from your history? This action cannot be undone.
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  className="px-4 py-3 rounded-2xl border border-gray-200 font-bold text-gray-700 hover:bg-gray-50 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRemoveOrder}
+                  className="px-4 py-3 bg-red-600 text-white rounded-2xl font-bold hover:bg-red-700 shadow-lg shadow-red-200 transition-all"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>

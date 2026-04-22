@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {useCart} from '../context/CartContext';
-import {FiArrowLeft, FiArrowRight, FiCheck, FiPlus, FiSearch} from 'react-icons/fi';
+import {FiCheck, FiPlus, FiSearch} from 'react-icons/fi';
+import Pagination from './Pagination';
 
 interface Product {
   _id: string;
@@ -120,35 +121,12 @@ const ProductList: React.FC = () => {
       </div>
 
       <div className="flex justify-center items-center mt-16 gap-2">
-        <button
-          onClick={() => setPage(p => Math.max(1, p - 1))}
-          className="p-2 text-gray-400 hover:text-black disabled:opacity-30"
-          disabled={page === 1}
-        >
-          <FiArrowLeft className="text-lg"/>
-        </button>
-
-        {Array.from({length: totalPages}, (_, i) => (
-          <button
-            key={i}
-            onClick={() => setPage(i + 1)}
-            className={`w-10 h-10 rounded-full text-sm font-bold transition-all ${
-              page === i + 1
-                ? 'bg-gray-900 text-white scale-110 shadow-lg'
-                : 'text-gray-500 hover:bg-gray-100'
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-
-        <button
-          onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-          className="p-2 text-gray-400 hover:text-black disabled:opacity-30"
-          disabled={page === totalPages}
-        >
-          <FiArrowRight className="text-lg"/>
-        </button>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          variant="compact"
+        />
       </div>
     </div>
   );
